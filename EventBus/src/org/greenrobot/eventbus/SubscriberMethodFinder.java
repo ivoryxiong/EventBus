@@ -168,7 +168,7 @@ class SubscriberMethodFinder {
                         if (findState.checkAdd(method, eventType)) {
                             ThreadMode threadMode = subscribeAnnotation.threadMode();
                             findState.subscriberMethods.add(new SubscriberMethod(method, eventType, threadMode,
-                                    subscribeAnnotation.priority(), subscribeAnnotation.sticky()));
+                                    subscribeAnnotation.priority(), subscribeAnnotation.sticky(), subscribeAnnotation.names()));
                         }
                     }
                 } else if (strictMethodVerification && method.isAnnotationPresent(Subscribe.class)) {

@@ -283,19 +283,32 @@ public class EventBusAnnotationProcessor extends AbstractProcessor {
             List<String> parts = new ArrayList<>();
             parts.add(callPrefix + "(\"" + methodName + "\",");
             String lineEnd = "),";
+            String[] eventNames = subscribe.names();
             if (subscribe.priority() == 0 && !subscribe.sticky()) {
                 if (subscribe.threadMode() == ThreadMode.POSTING) {
-                    parts.add(eventClass + lineEnd);
+                    parts.add(eventClass + ",");
                 } else {
                     parts.add(eventClass + ",");
-                    parts.add("ThreadMode." + subscribe.threadMode().name() + lineEnd);
+                    parts.add("ThreadMode." + subscribe.threadMode().name() + ",");
                 }
             } else {
                 parts.add(eventClass + ",");
                 parts.add("ThreadMode." + subscribe.threadMode().name() + ",");
                 parts.add(subscribe.priority() + ",");
-                parts.add(subscribe.sticky() + lineEnd);
+                parts.add(subscribe.sticky() + ",");
             }
+
+            parts.add("new String[] {");
+            if (eventNames != null) {
+                for (int i = 0; i < eventNames.length; i++) {
+                    parts.add(eventNames[i]);
+                    if (i != eventNames.length - 1) {
+                        parts.add(",");
+                    }
+                }
+            }
+            parts.add("}" + lineEnd);
+
             writeLine(writer, 3, parts.toArray(new String[parts.size()]));
 
             if (verbose) {

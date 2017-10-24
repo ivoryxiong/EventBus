@@ -16,6 +16,8 @@
 package org.greenrobot.eventbus;
 
 import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
 
 /** Used internally by EventBus and generated subscriber indexes. */
 public class SubscriberMethod {
@@ -24,15 +26,20 @@ public class SubscriberMethod {
     final Class<?> eventType;
     final int priority;
     final boolean sticky;
+    final Set<String> eventNames;
     /** Used for efficient comparison */
     String methodString;
 
-    public SubscriberMethod(Method method, Class<?> eventType, ThreadMode threadMode, int priority, boolean sticky) {
+    public SubscriberMethod(Method method, Class<?> eventType, ThreadMode threadMode, int priority, boolean sticky, String[] eventNames) {
         this.method = method;
         this.threadMode = threadMode;
         this.eventType = eventType;
         this.priority = priority;
         this.sticky = sticky;
+        this.eventNames = new HashSet<String>();
+        for (String eventName : eventNames) {
+            this.eventNames.add(eventName);
+        }
     }
 
     @Override
@@ -57,6 +64,12 @@ public class SubscriberMethod {
             builder.append(method.getDeclaringClass().getName());
             builder.append('#').append(method.getName());
             builder.append('(').append(eventType.getName());
+            if (eventNames != null) {
+                for (String eventName : eventNames) {
+                    builder.append(",");
+                    builder.append(eventName);
+                }
+            }
             methodString = builder.toString();
         }
     }

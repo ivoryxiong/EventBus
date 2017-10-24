@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
+import java.util.jar.Attributes;
 
 /**
  * EventBus is a central publish/subscribe event system for Android. Events are posted ({@link #post(Object)}) to the
@@ -390,6 +391,18 @@ public class EventBus {
         }
         if (subscriptions != null && !subscriptions.isEmpty()) {
             for (Subscription subscription : subscriptions) {
+
+                //同类型消息按EventName 分发到不同的方法
+                if (event instanceof NamedEvent) {
+                    String eventName = ((NamedEvent)event).getEventName();
+                    if (subscription.subscriberMethod.eventNames == null) {
+                        continue;
+                    }
+                    if (!subscription.subscriberMethod.eventNames.contains(eventName)) {
+                        continue;
+                    }
+                }
+
                 postingState.event = event;
                 postingState.subscription = subscription;
                 boolean aborted = false;
